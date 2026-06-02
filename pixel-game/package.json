@@ -1,15 +1,16 @@
 {
   "name": "pixel-game",
   "version": "1.0.0",
-  "description": "",
-  "main": "test.js",
+  "description": "像素风冒险游戏",
+  "main": "js/main.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "python3 -m http.server 8080",
+    "test": "echo \"No tests specified\" && exit 0"
   },
-  "keywords": [],
+  "keywords": ["game", "pixel-art", "platformer"],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "playwright": "^1.60.0"
   }
