@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像素冒险 - Pixel Adventure</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="480"></canvas>
+        
+        <div id="menu-screen" class="screen active">
+            <h1 class="title">像素冒险</h1>
+            <p class="subtitle">PIXEL ADVENTURE</p>
+            <button id="start-btn" class="pixel-btn">开始游戏</button>
+            <div class="controls-info">
+                <p>操作说明</p>
+                <p>← → 或 A D 移动</p>
+                <p>空格 或 W 跳跃</p>
+                <p>ESC 暂停</p>
+            </div>
+        </div>
+        
+        <div id="pause-screen" class="screen">
+            <h2 class="title-small">游戏暂停</h2>
+            <button id="resume-btn" class="pixel-btn">继续游戏</button>
+            <button id="quit-btn" class="pixel-btn">返回主菜单</button>
+        </div>
+        
+        <div id="gameover-screen" class="screen">
+            <h2 class="title-small">游戏结束</h2>
+            <p id="final-score">得分: 0</p>
+            <button id="restart-btn" class="pixel-btn">重新开始</button>
+            <button id="menu-btn" class="pixel-btn">返回主菜单</button>
+        </div>
+        
+        <div id="win-screen" class="screen">
+            <h2 class="title-small">恭喜通关!</h2>
+            <p id="win-score">得分: 0</p>
+            <button id="win-restart-btn" class="pixel-btn">再玩一次</button>
+            <button id="win-menu-btn" class="pixel-btn">返回主菜单</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
