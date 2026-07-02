@@ -1,0 +1,38 @@
+// file: features/copilot/plans/lib/error_handling.acsp
+// Error handling helpers (pseudo-ACSpl+)
+
+function HandleAxisAlarm(axis)
+  LOG("HandleAxisAlarm: " + axis)
+  // Stop axis safely
+  STOP_AXIS(axis)
+  // Read alarm code
+  var code = GetAxisAlarmCode(axis)
+  LOG("Alarm code for " + axis + ": " + code)
+  // Simple recovery attempt for recoverable alarms
+  if IsRecoverableAlarm(code) THEN
+    LOG("Attempting recover for " + axis)
+    ClearAxisAlarm(axis)
+    if NOT HomeAxis(axis) THEN
+      LOG("Recovery failed after clear")
+      RETURN FALSE
+    ENDIF
+    RETURN TRUE
+  ELSE
+    LOG("Non-recoverable alarm: escalate")
+    RETURN FALSE
+  ENDIF
+endfunction
+
+function HANDLE_ERROR()
+  LOG("Generic error handler invoked")
+  // Example: iterate axes and handle alarms
+  var axes = ["AXIS1","AXIS2"]
+  foreach a in axes
+    if AxisIsInAlarm(a) THEN
+      if NOT HandleAxisAlarm(a) THEN
+        LOG("Unhandled alarm on " + a)
+        // In production, notify upstream or set system to safe state
+      ENDIF
+    ENDIF
+  endforeach
+endfunction

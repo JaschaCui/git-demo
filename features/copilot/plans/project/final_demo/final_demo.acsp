@@ -1,0 +1,41 @@
+// file: features/copilot/plans/project/final_demo/final_demo.acsp
+// Integrated demo (pseudo-ACSpl+)
+
+// Configuration
+var pick_pos = 100
+var place_pos = 200
+var feed = 150
+
+function FinalDemo()
+  LOG("FinalDemo start")
+  // Wait for start
+  if NOT WaitForStartSignal(60000) THEN
+    LOG("No start signal received")
+    RETURN
+  ENDIF
+
+  // Pick
+  if NOT MoveAbs("AXIS1", pick_pos, 60) THEN
+    LOG("Pick failed")
+    HANDLE_ERROR()
+    RETURN
+  ENDIF
+
+  // Interpolate to place
+  if NOT LinearInterpolation(0,0,50,25,feed) THEN
+    LOG("Interpolation failed")
+    HANDLE_ERROR()
+    RETURN
+  ENDIF
+
+  // Place
+  if NOT MoveAbs("AXIS2", place_pos, 50) THEN
+    LOG("Place failed")
+    HANDLE_ERROR()
+    RETURN
+  ENDIF
+
+  LOG("FinalDemo complete")
+endfunction
+
+FinalDemo()

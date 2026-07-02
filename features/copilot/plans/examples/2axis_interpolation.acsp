@@ -1,0 +1,40 @@
+// file: features/copilot/plans/examples/2axis_interpolation.acsp
+// Two-axis linear interpolation example (pseudo-ACSpl+)
+
+function WaitForInterpolationDone(timeout_ms)
+  var start = CURRENT_TIME_MS()
+  WHILE TRUE
+    if InterpolationInError() THEN
+      LOG("Interpolation error detected")
+      RETURN FALSE
+    ENDIF
+    if InterpolationComplete() THEN
+      RETURN TRUE
+    ENDIF
+    if CURRENT_TIME_MS() - start > timeout_ms THEN
+      LOG("Interpolation timeout")
+      RETURN FALSE
+    ENDIF
+    WAIT_MS(50)
+  ENDWHILE
+endfunction
+
+function LinearInterpolation(x1,y1,x2,y2,feed)
+  // Setup feed and interpolation mode
+  SET_FEED(feed)
+  // Move to start to ensure consistent start point
+  MOVE_ABSOLUTE("AXIS_X", x1)
+  MOVE_ABSOLUTE("AXIS_Y", y1)
+  // Start interpolation to target
+  INTERPOLATE_TO(x2, y2)
+  var ok = WaitForInterpolationDone(10000)
+  if NOT ok THEN
+    LOG("LinearInterpolation failed")
+    RETURN FALSE
+  ENDIF
+  RETURN TRUE
+endfunction
+
+// Example usage
+LinearInterpolation(0,0,100,50,200)
+LOG("2-axis interpolation demo complete")
