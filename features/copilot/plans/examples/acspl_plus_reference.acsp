@@ -1,0 +1,79 @@
+# ACSpl+ Language Reference Snippet and Notes
+
+This file contains the ACSpl+ snippet you provided and brief notes on how it maps to the example templates in this repo.
+
+---
+
+Provided ACSpl+ snippet (verbatim):
+
+COEWRITE/2 (AXIS_X,0x2191,0,0)
+COEWRITE/2 (AXIS_Y,0x2191,0,0)
+PTP/e (AXIS_X, AXIS_Y), 49.291, 49.290
+Trigger_Interval =0.707 
+Trigger_Begin_Pos =-49.144
+Trigger_End_Pos=48.791
+moveDir = 0
+COEWRITE/4 (AXIS_X,0X219b,0,10000*Trigger_Begin_Pos)
+COEWRITE/4 (AXIS_X,0X219d,0,10000*Trigger_End_Pos)
+COEWRITE/4 (AXIS_X,0X219f,0,10000*Trigger_Interval)
+COEWRITE/4 (AXIS_X,0X2199,0,7000)
+COEWRITE/2 (AXIS_X,0X2195,0,moveDir )
+COEWRITE/2 (AXIS_X,0x2191,0,25)
+PTP/e (AXIS_X, AXIS_Y), -49.644, -49.644
+
+---
+
+Notes and mapping guidance (English/中文):
+
+- COEWRITE/X(...) appears to be register write commands. Use COEWRITE/2 or COEWRITE/4 to set controller registers (e.g., trigger positions, intervals, modes). 在 ACSpl+ 中，COEWRITE/... 用于向控制器寄存器写值，常用于配置触发/编码器/模式参数。
+
+- PTP/e (...) is a point-to-point motion command (likely with external coordinate specification). It's used here to move the AXIS_X/AXIS_Y to target positions. PTP/e 用于点位运动（两轴同时指定坐标）。
+
+- Variables: Trigger_Interval, Trigger_Begin_Pos, Trigger_End_Pos, moveDir are script variables. 请在脚本顶部声明这些变量并按需要做单位转换（示例中使用 10000 * pos 写入寄存器）。
+
+- The example writes scaled positions into registers (10000 * Trigger_Begin_Pos). 注意单位换算：示例中使用了乘 10000 的缩放因子以匹配控制器内部单位（请根据你的控制器手册确认）。
+
+- Suggested mapping to repo abstractions:
+  - Abstract: SET_VELOCITY / SET_FEED -> ACSpl+: use COEWRITE to set feed/velocity registers if controller exposes them, or use native speed parameters on PTP/e if supported.
+  - Abstract: MOVE_ABSOLUTE / MOVE_REL -> ACSpl+: use PTP/e for point moves; if controller supports linear interpolation across axes, use the appropriate INTERPOLATE or LIN command instead.
+  - Abstract: Write register -> ACSpl+: COEWRITE/2 or COEWRITE/4 as shown.
+
+建议：在运行真实控制器之前，在脚本中注释出所有 COEWRITE 写入寄存器动作以免误写配置，先用仿真或 dry-run 验证运动轨迹。
+
+---
+
+Example: small ACSpl+ script based on your snippet (kept verbatim where provided)
+
+// Begin example
+COEWRITE/2 (AXIS_X,0x2191,0,0)
+COEWRITE/2 (AXIS_Y,0x2191,0,0)
+
+// Move to first point
+PTP/e (AXIS_X, AXIS_Y), 49.291, 49.290
+
+// Configure trigger params (scaled)
+Trigger_Interval = 0.707
+Trigger_Begin_Pos = -49.144
+Trigger_End_Pos = 48.791
+moveDir = 0
+
+COEWRITE/4 (AXIS_X,0X219b,0,10000*Trigger_Begin_Pos)
+COEWRITE/4 (AXIS_X,0X219d,0,10000*Trigger_End_Pos)
+COEWRITE/4 (AXIS_X,0X219f,0,10000*Trigger_Interval)
+COEWRITE/4 (AXIS_X,0X2199,0,7000)
+COEWRITE/2 (AXIS_X,0X2195,0,moveDir)
+COEWRITE/2 (AXIS_X,0x2191,0,25)
+
+// Move to second point
+PTP/e (AXIS_X, AXIS_Y), -49.644, -49.644
+// End example
+
+---
+
+What I changed in the branch
+- Added this reference file: features/copilot/plans/examples/acspl_plus_reference.acsp
+- I also inserted per-file NOTE headers earlier indicating which abstract API names to replace. 请在检查 PR 时确认本文件内容并决定是否要把它作为 examples/ 目录的一部分或 docs/ 下的参考手册。
+
+Next step
+- You asked me to create the PR. I will now create the PR using the prepared description and assign reviewer JaschaCui. After creation I will post the PR link here.
+
