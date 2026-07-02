@@ -1,0 +1,51 @@
+// NOTE: Replace API names as needed: INTERPOLATE_START, INTERPOLATE_POINT, INTERPOLATE_COMPLETE,
+// InterpolationInError, SET_FEED_RATE, MOVE_ABSOLUTE, SET_VELOCITY, WAIT_MS, LOG
+
+// file: features/copilot/plans/examples/2axis_interpolation.acsp
+// 两轴线性插补示例（更贴近真实控制器风格）
+
+FUNCTION WaitForInterpolationDone(timeout_ms)
+  VAR start := CURRENT_TIME_MS()
+  WHILE TRUE DO
+    IF InterpolationInError() THEN
+      LOG(ERROR, 'Interpolation error detected')
+      RETURN FALSE
+    ENDIF
+    IF InterpolationComplete() THEN
+      RETURN TRUE
+    ENDIF
+    IF CURRENT_TIME_MS() - start > timeout_ms THEN
+      LOG(WARN, 'Interpolation timeout')
+      RETURN FALSE
+    ENDIF
+    WAIT_MS(50)
+  ENDWHILE
+ENDFUNCTION
+
+FUNCTION LinearInterpolation(x1, y1, x2, y2, feed)
+  SET_FEED_RATE(feed)
+  MOVE_ABSOLUTE('AXIS_X', x1)
+  MOVE_ABSOLUTE('AXIS_Y', y1)
+  IF NOT WaitForDone('AXIS_X', 5000) OR NOT WaitForDone('AXIS_Y', 5000) THEN
+    LOG(ERROR, 'Failed to reach interpolation start point')
+    RETURN FALSE
+  ENDIF
+
+  INTERPOLATE_START()
+  INTERPOLATE_POINT(x2, y2)
+
+  VAR ok := WaitForInterpolationDone(10000)
+  IF NOT ok THEN
+    LOG(ERROR, 'LinearInterpolation failed')
+    RETURN FALSE
+  ENDIF
+  RETURN TRUE
+ENDFUNCTION
+
+IF SCRIPT_RUNNING_AS_MAIN() THEN
+  IF LinearInterpolation(0, 0, 100, 50, 200) THEN
+    LOG(INFO, '2-axis interpolation demo complete')
+  ELSE
+    LOG(ERROR, '2-axis interpolation demo failed')
+  ENDIF
+ENDIF

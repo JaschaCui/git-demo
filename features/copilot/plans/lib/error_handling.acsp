@@ -1,0 +1,36 @@
+// NOTE: Replace API names as needed: STOP_AXIS, GetAxisAlarmCode, ClearAxisAlarm, HomeAxis, AxisIsInAlarm, LOG
+
+// file: features/copilot/plans/lib/error_handling.acsp
+// 更具结构化的错误处理模块（示例）
+
+FUNCTION HandleAxisAlarm(axis)
+  LOG(WARN, 'HandleAxisAlarm: ' + axis)
+  STOP_AXIS(axis)
+  VAR code := GetAxisAlarmCode(axis)
+  LOG(INFO, 'Alarm code for ' + axis + ': ' + TO_STRING(code))
+
+  IF IsRecoverableAlarm(code) THEN
+    LOG(INFO, 'Attempting recovery for ' + axis)
+    ClearAxisAlarm(axis)
+    IF NOT HomeAxis(axis) THEN
+      LOG(ERROR, 'Recovery failed after clear for ' + axis)
+      RETURN FALSE
+    ENDIF
+    RETURN TRUE
+  ELSE
+    LOG(ERROR, 'Non-recoverable alarm: escalate for ' + axis)
+    RETURN FALSE
+  ENDIF
+ENDFUNCTION
+
+FUNCTION HANDLE_ERROR()
+  LOG(ERROR, 'Generic error handler invoked')
+  VAR axes := ['AXIS1', 'AXIS2']
+  FOR EACH a IN axes DO
+    IF AxisIsInAlarm(a) THEN
+      IF NOT HandleAxisAlarm(a) THEN
+        LOG(ERROR, 'Unhandled alarm on ' + a)
+      ENDIF
+    ENDIF
+  ENDFOR
+ENDFUNCTION

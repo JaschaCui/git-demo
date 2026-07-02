@@ -1,25 +1,32 @@
+// NOTE: Replace the following controller API names as needed for your ACSpl+ runtime environment:
+// MOVE_ABSOLUTE, MOVE_REL, SET_VELOCITY, GET_SYSTEM_TIME_MS, AxisIsInAlarm, AxisAtTarget,
+// GetAxisPosition, STOP_AXIS, GetAxisAlarmCode, ClearAxisAlarm, HomeAxis, ReadDI, WAIT_MS, LOG
+// This header documents which abstract APIs the example uses and should be replaced before running on real hardware.
+
 // file: features/copilot/plans/scripts/week1_basics.acsp
-// 描述：Week 1 基础练习示例 — 变量、条件、循环
+// Week 1 基础练习（接近 ACSpl+ 风格示例）
+// 注：下面语法为接近真实控制脚本的伪代码/示例。请在真实控制器上依据官方 ACSpl+ 参考作必要调整.
 
-// 变量声明（伪语法）
-var counter = 0
-var limit = 5
-var axisName = "AXIS1"
+VAR counter := 0
+VAR limit := 5
+VAR axisName := 'AXIS1'
 
-LOG("Week1 basics start")
+LOG(INFO, 'Week1 basics start')
 
-// 循环示例：重复计数
-WHILE counter < limit
-  LOG("Counter = " + counter)
-  counter = counter + 1
-  // 简单条件示例
-  IF counter == 3 THEN
-    LOG("Reached 3 — performing a simulated action")
-    // 模拟动作：设置速度并打印（实际环境下调用 MOVE 命令）
+// 循环示例
+WHILE counter < limit DO
+  LOG(DEBUG, 'Counter = ' + TO_STRING(counter))
+  counter := counter + 1
+
+  // 条件示例
+  IF counter = 3 THEN
+    LOG(INFO, 'Reached 3 — performing a simulated action')
+    // 设置速度（伪指令）
     SET_VELOCITY(axisName, 50)
-    LOG("Velocity for " + axisName + " set to 50")
+    LOG(INFO, 'Velocity for ' + axisName + ' set to 50')
   ENDIF
+
   WAIT_MS(200)
 ENDWHILE
 
-LOG("Week1 basics complete")
+LOG(INFO, 'Week1 basics complete')

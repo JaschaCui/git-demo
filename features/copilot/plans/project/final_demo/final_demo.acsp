@@ -1,0 +1,42 @@
+// file: features/copilot/plans/project/final_demo/final_demo.acsp
+// 集成演示脚本（接近真实语法）
+
+CONST PICK_POS := 100
+CONST PLACE_POS := 200
+CONST FEED := 150
+
+FUNCTION FinalDemo()
+  LOG(INFO, 'FinalDemo start')
+
+  IF NOT WaitForStartSignal(60000) THEN
+    LOG(WARN, 'No start signal received')
+    RETURN
+  ENDIF
+
+  // Pick
+  IF NOT MoveAbs('AXIS1', PICK_POS, 60) THEN
+    LOG(ERROR, 'Pick failed')
+    HANDLE_ERROR()
+    RETURN
+  ENDIF
+
+  // Interpolate to place
+  IF NOT LinearInterpolation(0, 0, 50, 25, FEED) THEN
+    LOG(ERROR, 'Interpolation failed')
+    HANDLE_ERROR()
+    RETURN
+  ENDIF
+
+  // Place
+  IF NOT MoveAbs('AXIS2', PLACE_POS, 50) THEN
+    LOG(ERROR, 'Place failed')
+    HANDLE_ERROR()
+    RETURN
+  ENDIF
+
+  LOG(INFO, 'FinalDemo complete')
+ENDFUNCTION
+
+IF SCRIPT_RUNNING_AS_MAIN() THEN
+  FinalDemo()
+ENDIF

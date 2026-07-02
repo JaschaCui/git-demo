@@ -1,0 +1,4 @@
+FALSE
+# Change to TRUE only after simulation verification and explicit authorized review.
+# This file acts as a repository-controlled flag to indicate intent to enable register writes.
+# Workflow: 1) Reviewer verifies behavior in simulation with COEWRITE logged only; 2) If approved, authorized maintainer edits this file to "TRUE" and commits; 3) A follow-up commit in acspl_plus_reference.acsp should set enable_register_writes := TRUE before running on hardware.

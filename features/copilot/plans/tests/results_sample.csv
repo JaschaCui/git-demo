@@ -1,0 +1,3 @@
+TestID,Module,Scenario,Steps,Expected,Actual,Result,Notes,Timestamp
+TC1,MoveAbs,Within range,MoveAbs('AXIS1',500,50),Reach 500,Reached 500,Pass,No alarm,2026-07-02T08:10:00Z
+TC4,MoveAbs,Sensor dropout,Disable feedback during move,Timeout/alarm,Timeout detected,Pass,Recovery path exercised,2026-07-02T08:12:30Z

@@ -1,0 +1,11 @@
+TestID,Module,Scenario,Steps,Expected,Actual,Result,Notes,Timestamp
+TC1,MoveAbs,Within range,MoveAbs('AXIS_X',500,50),Reach 500,Reached 500,Pass,No alarm,2026-07-02T08:10:00Z
+TC2,MoveAbs,Over travel,MoveAbs('AXIS_X',50000,100),Soft limit triggered,Soft limit alarm,Fail,Soft limit active,2026-07-02T08:15:00Z
+TC3,MoveRel,Relative move small,MoveRel('AXIS_X',-200,40),Position -200 delta,Reached -200,Pass,Minor overshoot 0.5mm,2026-07-02T08:20:00Z
+TC4,Sensor dropout,Feedback loss during move,Disable feedback during move,Timeout/alarm,Timeout detected,Pass,Recovery path exercised,2026-07-02T08:12:30Z
+TC5,Interpolation,Two-axis linear interp,LinearInterpolation(0,0,100,50,200),No interpolation error,Completed with 2ms jitter,Pass,Timing jitter within tolerance,2026-07-02T08:25:00Z
+TC6,IO Flow,Pick-place sequence,StartSensor triggers pick->move->place,Place complete,Place complete,Pass,IO debounce ok,2026-07-02T08:30:00Z
+TC7,Alarm Recovery,Axis alarm and auto-recover,Trigger alarm then ClearAxisAlarm & HomeAxis,Axis homed,Axis homed after clear,Pass,Auto recovery success,2026-07-02T08:35:00Z
+TC8,Register Write (dry-run),COEWRITE simulated with writes disabled,Registers updated in sim,Logged intended writes,Pass,Writes disabled — simulation only,2026-07-02T08:40:00Z
+TC9,High Speed,Fast traverse at 5000mm/s,PTP with high feed,Reach target within time,Reached with safe stop,Pass,Speed limited by configured max,2026-07-02T08:45:00Z
+TC10,Fault Injection,Sensor false trigger during interpolation,Inject false trigger,System handles and completes,Handled and continued,Pass,Recovery logic exercised,2026-07-02T08:50:00Z

@@ -1,0 +1,67 @@
+// ACSpl+ safe template: integrate user-provided snippet with safe guard for register writes
+// NOTE: register writes are disabled by default. Set enable_register_writes := TRUE only after review in a controlled/simulated environment.
+
+// Configuration
+VAR enable_register_writes := FALSE  // default: do not write controller registers
+VAR AXIS_X := 'AXIS_X'
+VAR AXIS_Y := 'AXIS_Y'
+VAR Trigger_Interval := 0.707
+VAR Trigger_Begin_Pos := -49.144
+VAR Trigger_End_Pos := 48.791
+VAR moveDir := 0
+
+// Helper: perform COEWRITE only when enabled (keeps actual writes explicit)
+FUNCTION SafeCOEWRITE(size, axis, addr, index, value)
+  // size: 2 or 4 (bytes), axis: axis identifier, addr: register addr, index: 0 usually, value: integer
+  IF enable_register_writes THEN
+    // Actual controller write
+    // COEWRITE/<size> (<axis>,<addr>,<index>,<value>)
+    // Uncomment the line below in a real ACSpl+ environment
+    // COEWRITE/" + TO_STRING(size) + " (" + axis + "," + addr + "," + TO_STRING(index) + "," + TO_STRING(value) + ")
+    LOG(INFO, 'Would write register: size=' + TO_STRING(size) + ', axis=' + axis + ', addr=' + addr + ', value=' + TO_STRING(value))
+  ELSE
+    // In simulation/dry-run: just log
+    LOG(INFO, 'Register write disabled: size=' + TO_STRING(size) + ', axis=' + axis + ', addr=' + addr + ', value=' + TO_STRING(value))
+  ENDIF
+ENDFUNCTION
+
+// Integrated snippet (original user-provided ACSpl+ fragment)
+// The COEWRITE lines below are executed via SafeCOEWRITE — safe by default.
+
+// Reset some registers
+// COEWRITE/2 (AXIS_X,0x2191,0,0)
+SafeCOEWRITE(2, AXIS_X, '0x2191', 0, 0)
+// COEWRITE/2 (AXIS_Y,0x2191,0,0)
+SafeCOEWRITE(2, AXIS_Y, '0x2191', 0, 0)
+
+// Move to first point
+// PTP/e (AXIS_X, AXIS_Y), 49.291, 49.290
+PTP/e (AXIS_X, AXIS_Y), 49.291, 49.290
+
+// Configure trigger params (variables declared above)
+// Trigger_Interval =0.707  (already set as variable)
+// Trigger_Begin_Pos =-49.144
+// Trigger_End_Pos=48.791
+// moveDir = 0
+
+// Write scaled trigger positions into registers (example uses scale factor 10000)
+SafeCOEWRITE(4, AXIS_X, '0x219b', 0, 10000 * Trigger_Begin_Pos)
+SafeCOEWRITE(4, AXIS_X, '0x219d', 0, 10000 * Trigger_End_Pos)
+SafeCOEWRITE(4, AXIS_X, '0x219f', 0, 10000 * Trigger_Interval)
+SafeCOEWRITE(4, AXIS_X, '0x2199', 0, 7000)
+SafeCOEWRITE(2, AXIS_X, '0x2195', 0, moveDir)
+// COEWRITE/2 (AXIS_X,0x2191,0,25)
+SafeCOEWRITE(2, AXIS_X, '0x2191', 0, 25)
+
+// Move to second point
+// PTP/e (AXIS_X, AXIS_Y), -49.644, -49.644
+PTP/e (AXIS_X, AXIS_Y), -49.644, -49.644
+
+// End of integrated snippet
+
+// Notes:
+// - Axis names kept as AXIS_X and AXIS_Y as confirmed.
+// - Scaling factor 10000 preserved as confirmed; adjust scale if controller units differ.
+// - Register addresses written as provided. Use enable_register_writes := TRUE only after review.
+// - This template logs register-write intent when disabled to aid reviewers and simulation testing.
+// - To indicate repository intent to enable register writes, update features/copilot/plans/enable_register_writes.flag to TRUE and follow enable_register_writes_instructions.md before toggling enable_register_writes in scripts.
