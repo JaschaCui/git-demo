@@ -1,40 +1,54 @@
 // file: features/copilot/plans/examples/2axis_interpolation.acsp
-// Two-axis linear interpolation example (pseudo-ACSpl+)
+// 两轴线性插补示例（更贴近真实控制器风格）
+// 说明：INTERPOLATE_START / INTERPOLATE_POINT 为示例抽象命令，请替换为实际 API
 
-function WaitForInterpolationDone(timeout_ms)
-  var start = CURRENT_TIME_MS()
-  WHILE TRUE
-    if InterpolationInError() THEN
-      LOG("Interpolation error detected")
+FUNCTION WaitForInterpolationDone(timeout_ms)
+  VAR start := CURRENT_TIME_MS()
+  WHILE TRUE DO
+    IF InterpolationInError() THEN
+      LOG(ERROR, 'Interpolation error detected')
       RETURN FALSE
     ENDIF
-    if InterpolationComplete() THEN
+    IF InterpolationComplete() THEN
       RETURN TRUE
     ENDIF
-    if CURRENT_TIME_MS() - start > timeout_ms THEN
-      LOG("Interpolation timeout")
+    IF CURRENT_TIME_MS() - start > timeout_ms THEN
+      LOG(WARN, 'Interpolation timeout')
       RETURN FALSE
     ENDIF
     WAIT_MS(50)
   ENDWHILE
-endfunction
+ENDFUNCTION
 
-function LinearInterpolation(x1,y1,x2,y2,feed)
-  // Setup feed and interpolation mode
-  SET_FEED(feed)
-  // Move to start to ensure consistent start point
-  MOVE_ABSOLUTE("AXIS_X", x1)
-  MOVE_ABSOLUTE("AXIS_Y", y1)
-  // Start interpolation to target
-  INTERPOLATE_TO(x2, y2)
-  var ok = WaitForInterpolationDone(10000)
-  if NOT ok THEN
-    LOG("LinearInterpolation failed")
+FUNCTION LinearInterpolation(x1, y1, x2, y2, feed)
+  // 设置进给
+  SET_FEED_RATE(feed)
+
+  // 确保从起点开始
+  MOVE_ABSOLUTE('AXIS_X', x1)
+  MOVE_ABSOLUTE('AXIS_Y', y1)
+  IF NOT WaitForDone('AXIS_X', 5000) OR NOT WaitForDone('AXIS_Y', 5000) THEN
+    LOG(ERROR, 'Failed to reach interpolation start point')
+    RETURN FALSE
+  ENDIF
+
+  // 启动插补（示例）
+  INTERPOLATE_START()
+  INTERPOLATE_POINT(x2, y2)
+
+  VAR ok := WaitForInterpolationDone(10000)
+  IF NOT ok THEN
+    LOG(ERROR, 'LinearInterpolation failed')
     RETURN FALSE
   ENDIF
   RETURN TRUE
-endfunction
+ENDFUNCTION
 
-// Example usage
-LinearInterpolation(0,0,100,50,200)
-LOG("2-axis interpolation demo complete")
+// 演示调用
+IF SCRIPT_RUNNING_AS_MAIN() THEN
+  IF LinearInterpolation(0, 0, 100, 50, 200) THEN
+    LOG(INFO, '2-axis interpolation demo complete')
+  ELSE
+    LOG(ERROR, '2-axis interpolation demo failed')
+  ENDIF
+ENDIF

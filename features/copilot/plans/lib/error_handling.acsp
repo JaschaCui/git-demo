@@ -1,38 +1,36 @@
 // file: features/copilot/plans/lib/error_handling.acsp
-// Error handling helpers (pseudo-ACSpl+)
+// 更具结构化的错误处理模块（示例）
 
-function HandleAxisAlarm(axis)
-  LOG("HandleAxisAlarm: " + axis)
-  // Stop axis safely
+FUNCTION HandleAxisAlarm(axis)
+  LOG(WARN, 'HandleAxisAlarm: ' + axis)
+  // 停止轴
   STOP_AXIS(axis)
-  // Read alarm code
-  var code = GetAxisAlarmCode(axis)
-  LOG("Alarm code for " + axis + ": " + code)
-  // Simple recovery attempt for recoverable alarms
-  if IsRecoverableAlarm(code) THEN
-    LOG("Attempting recover for " + axis)
+  VAR code := GetAxisAlarmCode(axis)
+  LOG(INFO, 'Alarm code for ' + axis + ': ' + TO_STRING(code))
+
+  IF IsRecoverableAlarm(code) THEN
+    LOG(INFO, 'Attempting recovery for ' + axis)
     ClearAxisAlarm(axis)
-    if NOT HomeAxis(axis) THEN
-      LOG("Recovery failed after clear")
+    IF NOT HomeAxis(axis) THEN
+      LOG(ERROR, 'Recovery failed after clear for ' + axis)
       RETURN FALSE
     ENDIF
     RETURN TRUE
   ELSE
-    LOG("Non-recoverable alarm: escalate")
+    LOG(ERROR, 'Non-recoverable alarm: escalate for ' + axis)
     RETURN FALSE
   ENDIF
-endfunction
+ENDFUNCTION
 
-function HANDLE_ERROR()
-  LOG("Generic error handler invoked")
-  // Example: iterate axes and handle alarms
-  var axes = ["AXIS1","AXIS2"]
-  foreach a in axes
-    if AxisIsInAlarm(a) THEN
-      if NOT HandleAxisAlarm(a) THEN
-        LOG("Unhandled alarm on " + a)
-        // In production, notify upstream or set system to safe state
+FUNCTION HANDLE_ERROR()
+  LOG(ERROR, 'Generic error handler invoked')
+  VAR axes := ['AXIS1', 'AXIS2']
+  FOR EACH a IN axes DO
+    IF AxisIsInAlarm(a) THEN
+      IF NOT HandleAxisAlarm(a) THEN
+        LOG(ERROR, 'Unhandled alarm on ' + a)
+        // 在生产系统中，这里应通知上位机并将系统置于安全状态
       ENDIF
     ENDIF
-  endforeach
-endfunction
+  ENDFOR
+ENDFUNCTION

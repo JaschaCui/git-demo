@@ -1,0 +1,29 @@
+// file: features/copilot/plans/examples/io_driven_flow.acsp
+// IO 触发拾取-移动-放置流程（更具可执行性示例）
+
+FUNCTION DebouncedReadDI(signal, debounce_ms)
+  IF ReadDI(signal) THEN
+    WAIT_MS(debounce_ms)
+    IF ReadDI(signal) THEN
+      RETURN TRUE
+    ENDIF
+  ENDIF
+  RETURN FALSE
+ENDFUNCTION
+
+WHILE TRUE DO
+  IF DebouncedReadDI('START_SENSOR', 50) THEN
+    // 执行拾取流程
+    IF NOT MoveAbs('AXIS1', PICK_POS, 50) THEN
+      LOG(ERROR, 'Pick move failed')
+      HANDLE_ERROR()
+    ELSE
+      // 放置
+      IF NOT MoveAbs('AXIS2', PLACE_POS, 60) THEN
+        LOG(ERROR, 'Place move failed')
+        HANDLE_ERROR()
+      ENDIF
+    ENDIF
+  ENDIF
+  WAIT_MS(100)
+ENDWHILE
