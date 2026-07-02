@@ -1,9 +1,10 @@
+// NOTE: Replace API names as needed: STOP_AXIS, GetAxisAlarmCode, ClearAxisAlarm, HomeAxis, AxisIsInAlarm, LOG
+
 // file: features/copilot/plans/lib/error_handling.acsp
 // 更具结构化的错误处理模块（示例）
 
 FUNCTION HandleAxisAlarm(axis)
   LOG(WARN, 'HandleAxisAlarm: ' + axis)
-  // 停止轴
   STOP_AXIS(axis)
   VAR code := GetAxisAlarmCode(axis)
   LOG(INFO, 'Alarm code for ' + axis + ': ' + TO_STRING(code))
@@ -29,7 +30,6 @@ FUNCTION HANDLE_ERROR()
     IF AxisIsInAlarm(a) THEN
       IF NOT HandleAxisAlarm(a) THEN
         LOG(ERROR, 'Unhandled alarm on ' + a)
-        // 在生产系统中，这里应通知上位机并将系统置于安全状态
       ENDIF
     ENDIF
   ENDFOR

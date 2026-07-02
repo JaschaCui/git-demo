@@ -1,14 +1,15 @@
+// NOTE: Replace API names as needed: MOVE_ABSOLUTE, MOVE_REL, SET_VELOCITY,
+// GET_SYSTEM_TIME_MS, AxisIsInAlarm, AxisAtTarget, GetAxisPosition, LOG, WAIT_MS
+
 // file: features/copilot/plans/lib/motion_lib.acsp
 // 简易运动库（更接近真实 ACSpl+ 风格）
 // 请将函数名与控制器 API 对照替换为你所在站点的真实命令
 
-// 获取当前时间（毫秒）
 FUNCTION CURRENT_TIME_MS()
   // 伪实现—请使用控制器提供的时间函数
   RETURN GET_SYSTEM_TIME_MS()
 ENDFUNCTION
 
-// 等待轴到位的辅助函数
 FUNCTION WaitForDone(axis, timeout_ms)
   VAR start := CURRENT_TIME_MS()
   WHILE TRUE DO
@@ -27,7 +28,6 @@ FUNCTION WaitForDone(axis, timeout_ms)
   ENDWHILE
 ENDFUNCTION
 
-// 绝对移动
 FUNCTION MoveAbs(axis, target_pos, speed)
   IF NOT IsAxisConfigured(axis) THEN
     LOG(ERROR, 'MoveAbs: axis ' + axis + ' not configured')
@@ -46,14 +46,12 @@ FUNCTION MoveAbs(axis, target_pos, speed)
   RETURN TRUE
 ENDFUNCTION
 
-// 相对移动
 FUNCTION MoveRel(axis, delta, speed)
   VAR current := GetAxisPosition(axis)
   VAR target := current + delta
   RETURN MoveAbs(axis, target, speed)
 ENDFUNCTION
 
-// 示例入口
 FUNCTION DemoMoves()
   LOG(INFO, 'DemoMoves start')
   IF MoveAbs('AXIS1', 1000, 60) THEN
@@ -70,7 +68,6 @@ FUNCTION DemoMoves()
   LOG(INFO, 'DemoMoves complete')
 ENDFUNCTION
 
-// 仅在脚本被直接执行时运行演示
 IF SCRIPT_RUNNING_AS_MAIN() THEN
   DemoMoves()
 ENDIF

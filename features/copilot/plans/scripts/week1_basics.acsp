@@ -1,8 +1,12 @@
+// NOTE: Replace the following controller API names as needed for your ACSpl+ runtime environment:
+// MOVE_ABSOLUTE, MOVE_REL, SET_VELOCITY, GET_SYSTEM_TIME_MS, AxisIsInAlarm, AxisAtTarget,
+// GetAxisPosition, STOP_AXIS, GetAxisAlarmCode, ClearAxisAlarm, HomeAxis, ReadDI, WAIT_MS, LOG
+// This header documents which abstract APIs the example uses and should be replaced before running on real hardware.
+
 // file: features/copilot/plans/scripts/week1_basics.acsp
 // Week 1 基础练习（接近 ACSpl+ 风格示例）
-// 注：下面语法为接近真实控制脚本的伪代码/示例。请在真实控制器上依据官方 ACSpl+ 参考作必要调整。
+// 注：下面语法为接近真实控制脚本的伪代码/示例。请在真实控制器上依据官方 ACSpl+ 参考作必要调整.
 
-// 变量
 VAR counter := 0
 VAR limit := 5
 VAR axisName := 'AXIS1'

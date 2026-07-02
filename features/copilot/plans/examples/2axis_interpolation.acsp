@@ -1,6 +1,8 @@
+// NOTE: Replace API names as needed: INTERPOLATE_START, INTERPOLATE_POINT, INTERPOLATE_COMPLETE,
+// InterpolationInError, SET_FEED_RATE, MOVE_ABSOLUTE, SET_VELOCITY, WAIT_MS, LOG
+
 // file: features/copilot/plans/examples/2axis_interpolation.acsp
 // 两轴线性插补示例（更贴近真实控制器风格）
-// 说明：INTERPOLATE_START / INTERPOLATE_POINT 为示例抽象命令，请替换为实际 API
 
 FUNCTION WaitForInterpolationDone(timeout_ms)
   VAR start := CURRENT_TIME_MS()
@@ -21,10 +23,7 @@ FUNCTION WaitForInterpolationDone(timeout_ms)
 ENDFUNCTION
 
 FUNCTION LinearInterpolation(x1, y1, x2, y2, feed)
-  // 设置进给
   SET_FEED_RATE(feed)
-
-  // 确保从起点开始
   MOVE_ABSOLUTE('AXIS_X', x1)
   MOVE_ABSOLUTE('AXIS_Y', y1)
   IF NOT WaitForDone('AXIS_X', 5000) OR NOT WaitForDone('AXIS_Y', 5000) THEN
@@ -32,7 +31,6 @@ FUNCTION LinearInterpolation(x1, y1, x2, y2, feed)
     RETURN FALSE
   ENDIF
 
-  // 启动插补（示例）
   INTERPOLATE_START()
   INTERPOLATE_POINT(x2, y2)
 
@@ -44,7 +42,6 @@ FUNCTION LinearInterpolation(x1, y1, x2, y2, feed)
   RETURN TRUE
 ENDFUNCTION
 
-// 演示调用
 IF SCRIPT_RUNNING_AS_MAIN() THEN
   IF LinearInterpolation(0, 0, 100, 50, 200) THEN
     LOG(INFO, '2-axis interpolation demo complete')
