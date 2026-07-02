@@ -1,0 +1,15 @@
+*** Draft commit 1: Change enable_register_writes.flag to TRUE (intent marker)
+
+Commit message (suggested):
+Enable register writes intent marker: set enable_register_writes.flag to TRUE after simulation approval
+
+Patch (apply to feature branch; this is an intent marker change - make this a separate commit):
+
+--- a/features/copilot/plans/enable_register_writes.flag
++++ b/features/copilot/plans/enable_register_writes.flag
+@@
+-FALSE
++# TRUE
++# Changed to TRUE to indicate reviewer approval to enable register writes.
++# NOTE: Only change this file after simulation verification and explicit authorized review.
+ 
