@@ -1,0 +1,72 @@
+// file: features/copilot/plans/lib/motion_lib.acsp
+// 描述：Week2 提供的简易运动库（MoveAbs, MoveRel, WaitForDone）
+// 注意：本文件为示例伪代码，需要根据实际 ACSpl+ 语法与 API 进行调整
+
+// 等待轴到位的辅助函数
+function WaitForDone(axis, timeout_ms)
+  var start = CURRENT_TIME_MS()
+  WHILE TRUE
+    if AxisIsInAlarm(axis) THEN
+      LOG("Axis " + axis + " alarm detected")
+      RETURN FALSE
+    ENDIF
+    if AxisAtTarget(axis) THEN
+      RETURN TRUE
+    ENDIF
+    if CURRENT_TIME_MS() - start > timeout_ms THEN
+      LOG("Timeout waiting for axis " + axis)
+      RETURN FALSE
+    ENDIF
+    WAIT_MS(50)
+  ENDWHILE
+endfunction
+
+// 绝对移动
+function MoveAbs(axis, target_pos, speed)
+  // 参数检查（示例）
+  if NOT IsAxisConfigured(axis) THEN
+    LOG("MoveAbs: axis " + axis + " not configured")
+    RETURN FALSE
+  ENDIF
+
+  // 设置速度
+  SET_VELOCITY(axis, speed)
+
+  // 发出移动命令
+  MOVE_ABSOLUTE(axis, target_pos)
+
+  // 等待完成
+  var ok = WaitForDone(axis, 5000)
+  if NOT ok THEN
+    LOG("MoveAbs failed for " + axis + " to " + target_pos)
+    RETURN FALSE
+  ENDIF
+  RETURN TRUE
+endfunction
+
+// 相对移动
+function MoveRel(axis, delta, speed)
+  var current = GetAxisPosition(axis)
+  var target = current + delta
+  RETURN MoveAbs(axis, target, speed)
+endfunction
+
+// 简单用于测试的入口示例
+function DemoMoves()
+  LOG("DemoMoves start")
+  if MoveAbs("AXIS1", 1000, 60) THEN
+    LOG("AXIS1 moved to 1000")
+  ELSE
+    LOG("AXIS1 move failed")
+  ENDIF
+
+  if MoveRel("AXIS1", -200, 40) THEN
+    LOG("AXIS1 returned by -200")
+  ELSE
+    LOG("AXIS1 relative move failed")
+  ENDIF
+  LOG("DemoMoves complete")
+endfunction
+
+// 自动调用演示（在被直接运行时）
+DemoMoves()

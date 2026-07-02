@@ -1,0 +1,25 @@
+// file: features/copilot/plans/scripts/week1_basics.acsp
+// 描述：Week 1 基础练习示例 — 变量、条件、循环
+
+// 变量声明（伪语法）
+var counter = 0
+var limit = 5
+var axisName = "AXIS1"
+
+LOG("Week1 basics start")
+
+// 循环示例：重复计数
+WHILE counter < limit
+  LOG("Counter = " + counter)
+  counter = counter + 1
+  // 简单条件示例
+  IF counter == 3 THEN
+    LOG("Reached 3 — performing a simulated action")
+    // 模拟动作：设置速度并打印（实际环境下调用 MOVE 命令）
+    SET_VELOCITY(axisName, 50)
+    LOG("Velocity for " + axisName + " set to 50")
+  ENDIF
+  WAIT_MS(200)
+ENDWHILE
+
+LOG("Week1 basics complete")
